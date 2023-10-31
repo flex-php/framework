@@ -1,5 +1,5 @@
 {
-    "name": "philipandersson/symfony-kernel",
+    "name": "philipodev/flex",
     "autoload": {
         "psr-4": {
             "Flex\\": "src/"
@@ -11,7 +11,7 @@
     },
     "authors": [
         {
-            "name": "Philip Andersson",
+            "name": "Philip Oliver",
             "email": "philipodev@gmail.com"
         }
     ],
