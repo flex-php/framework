@@ -1,0 +1,8 @@
+/app
+/public
+/vendor
+/.flex
+/.idea
+
+flex.config.php
+TODO.md

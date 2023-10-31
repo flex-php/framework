@@ -1,0 +1,33 @@
+{
+    "name": "philipandersson/symfony-kernel",
+    "autoload": {
+        "psr-4": {
+            "Flex\\": "src/"
+        },
+        "files": [
+            "src/Helpers/view.php",
+            "src/Helpers/http.php"
+        ]
+    },
+    "authors": [
+        {
+            "name": "Philip Andersson",
+            "email": "philipodev@gmail.com"
+        }
+    ],
+    "require": {
+        "symfony/http-kernel": "^6.3",
+        "symfony/framework-bundle": "^6.3",
+        "symfony/http-foundation": "^6.3",
+        "symfony/twig-bundle": "^6.3",
+        "symfony/config": "^6.3",
+        "symfony/yaml": "^6.3",
+        "symfony/finder": "^6.3",
+        "symfony/monolog-bundle": "^3.8",
+        "symfony/console": "^6.3"
+    },
+    "require-dev": {
+        "symfony/profiler-pack": "^1.0",
+        "symfony/web-profiler-bundle": "^6.3"
+    }
+}

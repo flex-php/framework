@@ -1,0 +1,13 @@
+services:
+  Flex\Service\RouteGeneratorService:
+    public: true
+
+  Flex\Routing\Loader\FileSystemRouteLoader:
+    arguments:
+      $logger: '@logger'
+      $routeGeneratorService: '@Flex\Service\RouteGeneratorService'
+      $projectDir: '%kernel.project_dir%'
+      $cacheDir: '%kernel.cache_dir%'
+      $env: '%kernel.environment%'
+    tags:
+      - { name: 'routing.loader' }

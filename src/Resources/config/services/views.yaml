@@ -1,0 +1,8 @@
+services:
+  Flex\View\ViewEngineManager: ~
+  Flex\View\ViewRenderService:
+    autowire: true
+
+  Flex\View\Engine\PhpEngine:
+    tags:
+      - { name: 'view.engine', extensions: ['php', 'html'] }

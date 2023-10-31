@@ -1,0 +1,18 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    
+  Flex\Controller\PageController:
+    arguments:
+      $viewRenderer: '@Flex\View\ViewRenderService'
+    tags:
+      - { name: 'controller.service_arguments' }
+
+  Flex\Controller\ActionController:
+    tags:
+      - { name: 'controller.service_arguments' }
+
+  Flex\Controller\RouteController:
+    tags:
+      - { name: 'controller.service_arguments' }

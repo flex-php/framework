@@ -1,0 +1,10 @@
+services:
+  Flex\EventListener\BuildEventListener:
+    arguments:
+      $routeGeneratorService: '@Flex\Service\RouteGeneratorService'
+      $viewRenderService: '@Flex\View\ViewRenderService'
+      $router: '@router'
+      $publicDir: '%kernel.project_dir%/public'
+      $appDir: '%kernel.project_dir%/app'
+    tags:
+      - { name: kernel.event_listener, event: 'flex.build', method: onBuild }
