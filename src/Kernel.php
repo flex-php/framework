@@ -3,14 +3,12 @@
 namespace Flex;
 
 use Flex\DependencyInjection\Compiler\ViewEnginePass;
-use Flex\Extension\TestExtension;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Bundle\WebProfilerBundle\WebProfilerBundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Extension\AbstractExtension;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
@@ -72,7 +70,6 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
                 }
             }
 
-            /** @var AbstractExtension $instance */
             $instance = new $extension();
             $container->registerExtension($instance);
             $this->extensionConfigs[$instance->getAlias()] = $config;
