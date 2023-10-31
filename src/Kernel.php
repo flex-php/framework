@@ -3,12 +3,14 @@
 namespace Flex;
 
 use Flex\DependencyInjection\Compiler\ViewEnginePass;
+use Flex\Extension\TestExtension;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Bundle\WebProfilerBundle\WebProfilerBundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\AbstractExtension;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
@@ -17,8 +19,13 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
 {
     use MicroKernelTrait;
 
+    protected array $flexConfig = [];
+    protected array $extensionConfigs = [];
+
     public function __construct(protected string $rootDir, string $environment)
     {
+        $this->flexConfig = $this->getFlexConfig();
+
         parent::__construct($environment, $environment != "prod");
     }
 
@@ -54,6 +61,23 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
 
     protected function build(ContainerBuilder $container): void
     {
+        foreach($this->flexConfig["extensions"] ?? [] as $extension){
+            $config = [];
+
+            if(is_array($extension)){
+                [$extension, $config] = $extension;
+
+                if(!is_array($config)){
+                    throw new \Exception("Extension config must be an array");
+                }
+            }
+
+            /** @var AbstractExtension $instance */
+            $instance = new $extension();
+            $container->registerExtension($instance);
+            $this->extensionConfigs[$instance->getAlias()] = $config;
+        }
+
         $container->addCompilerPass(new ViewEnginePass());
     }
 
@@ -104,6 +128,10 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
 
         $container->extension("framework", $frameworkConfig);
 
+        foreach($this->extensionConfigs as $alias => $config){
+            $container->extension($alias, $config);
+        }
+
         // TODO: add this for error pages and profiler?
         /*$container->extension('twig', [
             'paths' => [
@@ -133,5 +161,15 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
                 'intercept_redirects' => false,
             ]);
         }
+    }
+
+    protected function getFlexConfig()
+    {
+        $filePath = $this->getProjectDir() . "/flex.config.php";
+        if(!file_exists($filePath)){
+            return [];
+        }
+
+        return require $filePath;
     }
 }
