@@ -1,5 +1,6 @@
 {
     "name": "flex-php/framework",
+    "version": "0.1.0",
     "description": "",
     "autoload": {
         "psr-4": {
