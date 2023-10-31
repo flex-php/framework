@@ -24,10 +24,10 @@
         "symfony/yaml": "^6.3",
         "symfony/finder": "^6.3",
         "symfony/monolog-bundle": "^3.8",
-        "symfony/console": "^6.3"
-    },
-    "require-dev": {
+        "symfony/console": "^6.3",
         "symfony/profiler-pack": "^1.0",
         "symfony/web-profiler-bundle": "^6.3"
+    },
+    "require-dev": {
     }
 }
