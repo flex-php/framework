@@ -20,11 +20,11 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
     protected array $flexConfig = [];
     protected array $extensionConfigs = [];
 
-    public function __construct(protected string $rootDir, string $environment)
+    public function __construct(string $environment)
     {
         $this->flexConfig = $this->getFlexConfig();
 
-        parent::__construct($environment, $environment != "prod");
+        parent::__construct($environment, $environment == "dev");
     }
 
     public function registerBundles(): iterable
@@ -44,17 +44,12 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
 
     public function getCacheDir(): string
     {
-        return $this->rootDir . '/.flex/cache';
+        return $this->getProjectDir() . '/.flex/'. $this->getEnvironment() .'/cache';
     }
 
     public function getLogDir(): string
     {
-        return $this->rootDir . '/.flex/log';
-    }
-
-    public function getProjectDir(): string
-    {
-        return $this->rootDir;
+        return $this->getProjectDir() . '/.flex/' . $this->getEnvironment() . '/log';
     }
 
     protected function build(ContainerBuilder $container): void
@@ -99,20 +94,31 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
 
     protected function configureContainer(ContainerConfigurator $container): void
     {
-        $isDev = $this->environment == 'dev';
+        $isProd = $this->environment == 'prod';
+        $appDir = $this->getProjectDir() . '/app';
+
+        if(!empty($_ENV['APP_DIR']))
+        {
+            $appDir = $_ENV['APP_DIR'];
+
+            if(str_starts_with($appDir, "./")){
+                $appDir = $this->getProjectDir() . substr($appDir, 1);
+            }
+        }
+
+        $container->parameters()->set('flex.app_dir', $appDir);
         $container->import(__DIR__ . '/Resources/config/services.yaml');
 
         $frameworkConfig = [
             "secret" => "S0ME_SECRET",
             "session" => [
-                "handler_id" => null,
                 "name" => "FLEX_SESSION",
                 "cookie_secure" => "auto",
                 "cookie_samesite" => "lax"
             ]
         ];
 
-        if($isDev){
+        if(!$isProd){
             $frameworkConfig["cache"] = [
                 "app" => "cache.adapter.array",
                 "system" => "cache.adapter.array",
@@ -120,6 +126,14 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
 
             $frameworkConfig["router"] = [
                 "cache_dir" => null
+            ];
+        }
+
+        if($this->environment == "test"){
+            $frameworkConfig["test"] = true;
+            $frameworkConfig["session"] = [
+                "storage_factory_id" => "session.storage.factory.mock_file",
+                "handler_id" => null
             ];
         }
 
@@ -136,9 +150,11 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
             ]
         ]);*/
 
+
+
         $container->extension("monolog", [
             "handlers" => [
-                "main" => $isDev ? [
+                "main" => !$isProd ? [
                     "type" => "stream",
                     "path" => "%kernel.logs_dir%/%kernel.environment%.log",
                     "level" => "debug",

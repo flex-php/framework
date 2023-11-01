@@ -13,7 +13,7 @@ class FileSystemRouteLoader extends Loader
     public function __construct(
         protected Logger $logger,
         protected RouteGeneratorService $routeGeneratorService,
-        protected string $projectDir,
+        protected string $appDir,
         protected string $cacheDir,
         string $env)
     {
@@ -25,7 +25,7 @@ class FileSystemRouteLoader extends Loader
     public function load(mixed $resource, string $type = null): RouteCollection
     {
         $routes = new RouteCollection();
-        $root = $this->projectDir . "/" . $resource;
+        $root = $this->appDir;
 
         $this->logger->debug("Loading file routes from $root");
 

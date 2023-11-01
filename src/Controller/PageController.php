@@ -29,9 +29,13 @@ class PageController extends BaseController
 
         $data = [];
         if(!empty($stack["data"])){
-            $script = new ScriptFile($stack["data"]);
+            $script = new ScriptFile($stack["data"], [
+                "request" => $request
+            ]);
             $data = $this->getPageData($script);
         }
+
+        $data["request"] = $request;
 
         return new Response($this->viewRenderer->renderStack($stack, $data));
     }

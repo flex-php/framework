@@ -3,6 +3,7 @@
 /vendor
 /.flex
 /.idea
+/.phpunit.result.cache
 
 flex.config.php
 TODO.md

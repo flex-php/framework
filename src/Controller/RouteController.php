@@ -27,6 +27,10 @@ class RouteController extends BaseController
         try {
             $response = $script->callFunction($method);
 
+            if(is_string($response)){
+                return new Response($response);
+            }
+
             if ($response instanceof Response) {
                 return $response;
             }

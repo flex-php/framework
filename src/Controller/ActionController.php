@@ -17,12 +17,13 @@ class ActionController extends BaseController
             return $middlewaresResponse;
         }
 
-        $method = $request->getMethod();
         $action = $request->attributes->get("_details")["stack"]["action"];
 
-        $script = new ScriptFile($action);
+        $script = new ScriptFile($action, [
+            "request" => $request,
+        ]);
 
-        $response = $script->callFunction($method);
+        $response = $script->callFunction(null, [$request]);
 
         if($response instanceof Response){
             return $response;
