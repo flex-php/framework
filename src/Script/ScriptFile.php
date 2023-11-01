@@ -23,7 +23,7 @@ class ScriptFile
             ob_start();
 
             (function($path){
-                require $path;
+                include_once $path;
             })($this->filePath);
 
             $output = ob_get_clean();
@@ -41,7 +41,7 @@ class ScriptFile
 
     public function getReturn(): mixed
     {
-        return require $this->filePath;
+        return include_once $this->filePath;
     }
 
     /**
@@ -50,16 +50,20 @@ class ScriptFile
      * @return mixed
      * @throws \Exception
      */
-    public function callFunction(string $functionName, array $arguments = []): mixed
+    public function callFunction(string $functionName, array $arguments = [], mixed $defaultOutput = null): mixed
     {
-        return (function($path, $functionName, $arguments){
-            require_once $path;
+        return (function($path, $functionName, $arguments, $defaultOutput){
+            include_once $path;
 
             if(!function_exists($functionName)){
+                if($defaultOutput !== null){
+                    return $defaultOutput;
+                }
+
                 throw new ScriptFunctionNotFoundException('Function does not exist');
             }
 
             return $functionName(...$arguments);
-        })($this->filePath, $functionName, $arguments);
+        })($this->filePath, $functionName, $arguments, $defaultOutput);
     }
 }

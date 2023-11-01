@@ -31,9 +31,9 @@ class BuildEventListener
         $staticFiles = $this->routeGeneratorService->getStaticFiles($this->appDir);
 
         foreach($staticFiles as $file) {
-            $path = $file->getRelativePathname();
+            $path = $file->getRelativePath();
             $fileName = $file->getFilename();
-            $event->getOutput()->writeln("Building static page: $path/$fileName");
+            $event->getOutput()->writeln("Building static page: /$path");
 
             $this->buildStaticFile($file);
         }
@@ -45,12 +45,30 @@ class BuildEventListener
         $script = new ScriptFile($stack["static"]);
         $pattern = $fileInfo->getRelativePath();
 
-        $paths = $script->callFunction("getStaticPaths");
+        $statics = $script->getReturn();
+
+        if(!is_array($statics)){
+            $statics = [];
+        }
+
+        $paths = [];
+        if(isset($statics["getStaticPaths"]) && is_callable($statics["getStaticPaths"])) {
+            $paths = call_user_func($statics["getStaticPaths"], []);
+        }
+
+        if(empty($paths)){
+            $paths = ["paths" => [["params" => []]]];
+        }
 
         foreach($paths["paths"] as $path) {
-            $data = $script->callFunction("getStaticData", [$path["params"]]);
-            $content = $this->viewRenderService->renderStack($stack, $data);
+            $getStaticData = isset($statics["getStaticData"]) && is_callable($statics["getStaticData"]) ? $statics["getStaticData"] : null;
 
+            $data = [];
+            if($getStaticData !== null){
+                $data = call_user_func($getStaticData, $path["params"]);
+            }
+
+            $content = $this->viewRenderService->renderStack($stack, $data);
             $this->writeStaticFile($pattern, $path["params"], $content);
         }
     }
