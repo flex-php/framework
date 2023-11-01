@@ -10,6 +10,7 @@ use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Bundle\WebProfilerBundle\WebProfilerBundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 
@@ -23,7 +24,6 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
     public function __construct(string $environment)
     {
         $this->flexConfig = $this->getFlexConfig();
-
         parent::__construct($environment, $environment == "dev");
     }
 
@@ -50,6 +50,11 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
     public function getLogDir(): string
     {
         return $this->getProjectDir() . '/.flex/' . $this->getEnvironment() . '/log';
+    }
+
+    public function getProjectDir(): string
+    {
+        return FLEX_ROOT;
     }
 
     protected function build(ContainerBuilder $container): void
