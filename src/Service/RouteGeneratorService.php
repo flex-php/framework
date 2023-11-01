@@ -42,7 +42,7 @@ class RouteGeneratorService
         };
 
         $methods = match ($type) {
-            "action" => ['POST', 'PUT', 'PATCH', 'DELETE'],
+            "action" => ['POST'],
             "route" => [], // all
             default => ['GET', 'HEAD'],
         };

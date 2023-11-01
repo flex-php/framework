@@ -7,41 +7,19 @@ use Symfony\Component\Finder\SplFileInfo;
 
 class ScriptFile
 {
-    public function __construct(protected string $filePath)
+    public function __construct(protected string $filePath, protected array $data = [])
     {
-    }
-
-    public function getContents(): string
-    {
-        return file_get_contents($this->filePath);
-    }
-
-    public function getOutput(): string
-    {
-        try {
-            $level = ob_get_level();
-            ob_start();
-
-            (function($path){
-                include_once $path;
-            })($this->filePath);
-
-            $output = ob_get_clean();
-
-            if($output === false){
-                throw new \Exception('Output buffer is empty');
-            }
-
-            return $output;
-        } catch (\Throwable $e) {
-            while (ob_get_level() > $level) ob_end_clean();
-            throw $e;
+        if(isset($data["request"])){
+            $this->data["session"] = $data["request"]->getSession();
         }
     }
 
     public function getReturn(): mixed
     {
-        return include_once $this->filePath;
+        return (function($path, $data){
+            extract($data);
+            return include $path;
+        })($this->filePath, $this->data);
     }
 
     /**
@@ -50,12 +28,16 @@ class ScriptFile
      * @return mixed
      * @throws \Exception
      */
-    public function callFunction(string $functionName, array $arguments = [], mixed $defaultOutput = null): mixed
+    public function callFunction(string $functionName = null, array $arguments = [], mixed $defaultOutput = null): mixed
     {
         return (function($path, $functionName, $arguments, $defaultOutput){
-            include_once $path;
+            $response = include $path;
 
-            if(!function_exists($functionName)){
+            if($functionName === null && is_callable($response)){
+                return $response(...$arguments);
+            }
+
+            if(!is_array($response) || !array_key_exists($functionName, $response)){
                 if($defaultOutput !== null){
                     return $defaultOutput;
                 }
@@ -63,7 +45,7 @@ class ScriptFile
                 throw new ScriptFunctionNotFoundException('Function does not exist');
             }
 
-            return $functionName(...$arguments);
+            return $response[$functionName](...$arguments);
         })($this->filePath, $functionName, $arguments, $defaultOutput);
     }
 }

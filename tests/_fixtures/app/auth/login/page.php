@@ -1,0 +1,4 @@
+<form method="post">
+    <input type="text" name="username">
+    <button type="submit">Login</button>
+</form>

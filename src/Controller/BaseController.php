@@ -14,7 +14,9 @@ class BaseController extends AbstractController
         $middlewares = $stack["middlewares"];
 
         foreach($middlewares as $middleware){
-            $middlewareResponse = (new ScriptFile($middleware))->getReturn();
+            $middlewareResponse = (new ScriptFile($middleware, [
+                "request" => $request
+            ]))->getReturn();
 
             if($middlewareResponse instanceof Response){
                 return $middlewareResponse;

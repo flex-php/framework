@@ -6,7 +6,7 @@ services:
     arguments:
       $logger: '@logger'
       $routeGeneratorService: '@Flex\Service\RouteGeneratorService'
-      $projectDir: '%kernel.project_dir%'
+      $appDir: '%flex.app_dir%'
       $cacheDir: '%kernel.cache_dir%'
       $env: '%kernel.environment%'
     tags:

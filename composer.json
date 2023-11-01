@@ -31,5 +31,7 @@
         "symfony/web-profiler-bundle": "^6.3"
     },
     "require-dev": {
+        "symfony/test-pack": "^1.1",
+        "symfony/dotenv": "^6.3"
     }
 }
