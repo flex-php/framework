@@ -13,7 +13,7 @@ class FlexTwigExtension extends AbstractExtension
             new TwigFunction("outlet", [$this, "outlet"]),
         ];
     }
-
+    
     public function outlet(): void
     {
         outlet();

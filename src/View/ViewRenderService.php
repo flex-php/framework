@@ -2,15 +2,18 @@
 
 namespace Flex\View;
 
+use Flex\View\Engine\Twig\TwigEngine;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Twig\Environment;
+use Twig\Markup;
 
 class ViewRenderService
 {
 
     protected array $data = [];
 
-    public function __construct(protected ViewEngineManager $engineManager)
+    public function __construct(protected Environment $twig, protected string $projectDir)
     {
     }
 
@@ -31,13 +34,12 @@ class ViewRenderService
         $fileName = basename($path);
         [,$extension] = explode('.', $fileName, 2);
 
-        $engine = $this->engineManager->getEngine($extension);
-
-        if (empty($engine)) {
-            throw new \Exception("No engine found for extension: $extension");
+        if($extension !== "html.twig"){
+            throw new \Exception("Only twig templates are supported");
         }
 
-        return $engine->render($path, $data);
+        $filePath = substr($path, strlen(realpath($this->projectDir)) + 1);
+        return $this->twig->render($filePath, $data);
     }
 
     public function render(Request $request, array $data = []): Response
@@ -49,18 +51,14 @@ class ViewRenderService
 
     public function renderStack(array $stack, array $data = []) : string
     {
-        global $viewRenderService;
-        $viewRenderService = $this;
-
         $this->data = $data;
-        $this->data["__content"] = $this->renderView($stack["page"], $this->data);
+        $this->data["outlet"] = new Markup($this->renderView($stack["page"], $this->data), 'UTF-8');
         $layouts = $stack["layouts"];
 
         while($layout = array_pop($layouts)){
-            $this->data["__content"] = $this->renderView($layout, $this->data);
+            $this->data["outlet"] = new Markup($this->renderView($layout, $this->data), 'UTF-8');
         }
 
-        return $this->data["__content"];
+        return $this->data["outlet"];
     }
-
 }

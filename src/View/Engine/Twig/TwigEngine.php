@@ -16,4 +16,12 @@ class TwigEngine implements EngineInterface
         $filePath = substr($filePath, strlen(realpath($this->projectDir)) + 1);
         return $this->twig->render($filePath, $data);
     }
+
+    public function postProcess(string $content, array $data = [])
+    {
+        return $content;
+        $template = $this->twig->createTemplate($content);
+
+        return $template->render($data);
+    }
 }

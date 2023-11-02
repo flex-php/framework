@@ -1,18 +1,9 @@
 services:
   Flex\View\ViewEngineManager: ~
   Flex\View\ViewRenderService:
-    autowire: true
-
-  Flex\View\Engine\PhpEngine:
-    tags:
-      - { name: 'view.engine', extensions: ['php', 'html'] }
-
-  Flex\View\Engine\Twig\TwigEngine:
     arguments:
-      $projectDir: '%kernel.project_dir%'
       $twig: '@twig'
-    tags:
-      - { name: 'view.engine', extensions: [ 'html.twig' ] }
+      $projectDir: '%kernel.project_dir%'
 
   Flex\View\Engine\Twig\Extension\FlexTwigExtension:
     tags:

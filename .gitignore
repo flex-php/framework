@@ -1,7 +1,7 @@
 /app
 /public
 /vendor
-/.flex
+.flex
 /.idea
 /.phpunit.result.cache
 /components
