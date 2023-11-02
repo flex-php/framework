@@ -4,6 +4,7 @@
 /.flex
 /.idea
 /.phpunit.result.cache
+/components
 
 flex.config.php
 TODO.md

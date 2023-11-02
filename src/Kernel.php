@@ -13,6 +13,9 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
+use Symfony\UX\TwigComponent\DependencyInjection\TwigComponentExtension;
+use Symfony\UX\TwigComponent\Twig\ComponentExtension;
+use Symfony\UX\TwigComponent\TwigComponentBundle;
 
 class Kernel extends \Symfony\Component\HttpKernel\Kernel
 {
@@ -33,6 +36,7 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
             new FrameworkBundle(),
             new MonologBundle(),
             new TwigBundle(),
+            new TwigComponentBundle(),
         ];
 
         if ($this->getEnvironment() !== 'prod') {
@@ -54,7 +58,7 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
 
     public function getProjectDir(): string
     {
-        return FLEX_ROOT;
+        return realpath(FLEX_ROOT);
     }
 
     protected function build(ContainerBuilder $container): void
@@ -112,7 +116,9 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
         }
 
         $container->parameters()->set('flex.app_dir', $appDir);
-        $container->import(__DIR__ . '/Resources/config/services.yaml');
+        $container->import(__DIR__ . '/Resources/config/services/*.yaml');
+        $container->import(__DIR__ . '/Resources/config/twig/twig.yaml');
+        $container->import(__DIR__ . '/Resources/config/twig/twig_component.yaml');
 
         $frameworkConfig = [
             "secret" => "S0ME_SECRET",
@@ -147,15 +153,6 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
         foreach($this->extensionConfigs as $alias => $config){
             $container->extension($alias, $config);
         }
-
-        // TODO: add this for error pages and profiler?
-        /*$container->extension('twig', [
-            'paths' => [
-                __DIR__ . '/templates' => 'Flex'
-            ]
-        ]);*/
-
-
 
         $container->extension("monolog", [
             "handlers" => [
