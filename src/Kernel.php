@@ -3,6 +3,7 @@
 namespace Flex;
 
 use Flex\DependencyInjection\Compiler\ViewEnginePass;
+use Flex\Event\BootstrapEvent;
 use Flex\Smoosh\SmooshBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
@@ -14,7 +15,6 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 use Symfony\UX\TwigComponent\TwigComponentBundle;
-use Twig\Extra\TwigExtraBundle\TwigExtraBundle;
 
 class Kernel extends \Symfony\Component\HttpKernel\Kernel
 {
@@ -36,7 +36,6 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
             new MonologBundle(),
             new TwigBundle(),
             new TwigComponentBundle(),
-            new TwigExtraBundle(),
             new SmooshBundle(),
         ];
 
@@ -85,6 +84,10 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
 
     public function handleAndTerminate(): void
     {
+        $container = $this->getContainer();
+        $dispatcher = $container->get('event_dispatcher');
+        $dispatcher->dispatch(new BootstrapEvent(), BootstrapEvent::BOOTSTRAP);
+
         $request = Request::createFromGlobals();
         $response = $this->handle($request);
         $response->send();
