@@ -17,20 +17,18 @@ class PreRenderListener
   public function onPreRender(PreRenderEvent $event)
   {
     $dir = dirname($event->path);
+    $this->handleScript($dir);
+    $this->handleStyle($dir);
+  }
+
+  protected function handleScript(string $dir): void
+  {
     $scriptPath = $dir . "/script.js";
-
-    if (!isset($this->cachedAssets[$scriptPath])) {
-      $this->cachedAssets[$scriptPath] = $this->manifest->get($scriptPath);
-    }
-
-    $asset = $this->cachedAssets[$scriptPath];
+    $asset = $this->getAsset($scriptPath);
 
     if ($asset !== null) {
       $script_tag = "<script src=\"/build/{$asset["file"]}\"></script>";
-
-      if (!$this->slotRegister->exists($script_tag)) {
-        $this->slotRegister->append("foot", $script_tag);
-      }
+      $this->appendTag("foot", $script_tag);
 
       if (isset($asset["css"]) && is_array($asset["css"])) {
         foreach ($asset["css"] as $css) {
@@ -41,6 +39,33 @@ class PreRenderListener
           }
         }
       }
+    }
+  }
+
+  protected function handleStyle(string $dir): void
+  {
+    $stylePath = $dir . "/style.css";
+    $asset = $this->getAsset($stylePath);
+
+    if ($asset !== null) {
+      $link_tag = "<link rel=\"stylesheet\" href=\"/build/{$asset["file"]}\">";
+      $this->appendTag("head", $link_tag);
+    }
+  }
+
+  protected function getAsset(string $path)
+  {
+    if (!isset($this->cachedAssets[$path])) {
+      $this->cachedAssets[$path] = $this->manifest->get($path);
+    }
+
+    return $this->cachedAssets[$path];
+  }
+
+  protected function appendTag(string $slot, string $tag): void
+  {
+    if (!$this->slotRegister->exists($tag)) {
+      $this->slotRegister->append($slot, $tag);
     }
   }
 }
