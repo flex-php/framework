@@ -84,10 +84,6 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
 
     public function handleAndTerminate(): void
     {
-        $container = $this->getContainer();
-        $dispatcher = $container->get('event_dispatcher');
-        $dispatcher->dispatch(new BootstrapEvent(), BootstrapEvent::BOOTSTRAP);
-
         $request = Request::createFromGlobals();
         $response = $this->handle($request);
         $response->send();
@@ -109,6 +105,9 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
     {
         $isProd = $this->environment == 'prod';
         $appDir = $this->getProjectDir() . '/app';
+
+        $dispatcher = $container->get('event_dispatcher');
+        $dispatcher->dispatch(new BootstrapEvent(), BootstrapEvent::BOOTSTRAP);
 
         if(!empty($_ENV['APP_DIR']))
         {
