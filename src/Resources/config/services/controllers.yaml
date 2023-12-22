@@ -6,6 +6,7 @@ services:
   Flex\Controller\PageController:
     arguments:
       $viewRenderer: '@Flex\View\ViewRenderService'
+      $requestStack: '@request_stack' 
     tags:
       - { name: 'controller.service_arguments' }
 

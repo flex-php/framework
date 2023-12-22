@@ -4,7 +4,6 @@ namespace Flex;
 
 use Flex\DependencyInjection\Compiler\ViewEnginePass;
 use Flex\Smoosh\SmooshBundle;
-use Flex\Smoosh\SmooshExtension;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Bundle\MonologBundle\MonologBundle;
@@ -80,7 +79,6 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
         }
 
         $container->addCompilerPass(new ViewEnginePass());
-        // $container->registerExtension(new SmooshExtension());
     }
 
     public function handleAndTerminate(): void

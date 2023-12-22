@@ -1,6 +1,1 @@
 <?php
-
-function flex()
-{
-
-}

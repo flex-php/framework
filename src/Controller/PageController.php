@@ -5,12 +5,14 @@ namespace Flex\Controller;
 use Flex\Script\ScriptFile;
 use Flex\View\ViewRenderService;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class PageController extends BaseController
 {
-    public function __construct(protected ViewRenderService $viewRenderer)
+    public function __construct(protected ViewRenderService $viewRenderer, protected RequestStack $requestStack)
     {
     }
 
@@ -26,6 +28,9 @@ class PageController extends BaseController
         if ($stack["static"] != null) {
             throw new BadRequestHttpException("Static paths should be built using `php flex build`");
         }
+
+        $isMainRequest = $this->requestStack->getMainRequest() === $this->requestStack->getCurrentRequest();
+        $stack["isMainRequest"] = $isMainRequest;
 
         $data = [];
         if (!empty($stack["data"])) {

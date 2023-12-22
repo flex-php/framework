@@ -50,6 +50,10 @@ class ViewRenderService
         $this->data["outlet"] = new Markup($this->renderView($stack["page"], $this->data), 'UTF-8');
         $layouts = $stack["layouts"];
 
+        if(!$stack["isMainRequest"]){
+            return $this->data["outlet"];
+        }
+
         while ($layout = array_pop($layouts)) {
             $this->data["outlet"] = new Markup($this->renderView($layout, $this->data), 'UTF-8');
         }
