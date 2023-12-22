@@ -14,6 +14,7 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 use Symfony\UX\TwigComponent\TwigComponentBundle;
+use Twig\Extra\TwigExtraBundle\TwigExtraBundle;
 
 class Kernel extends \Symfony\Component\HttpKernel\Kernel
 {
@@ -35,6 +36,7 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
             new MonologBundle(),
             new TwigBundle(),
             new TwigComponentBundle(),
+            new TwigExtraBundle(),
             new SmooshBundle(),
         ];
 
@@ -170,7 +172,7 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
         $twigPaths = [
             '%kernel.project_dir%/' => null,
         ];
-        
+
         if (is_dir($this->getProjectDir() . "/components")) {
             $twigPaths["%kernel.project_dir%/components"] = null;
         }

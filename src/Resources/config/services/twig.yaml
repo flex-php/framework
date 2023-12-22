@@ -1,0 +1,3 @@
+services:
+  League\CommonMark\Extension\Table\ExternalLinksExtension:
+    tags: ['twig.markdown.league_extension']

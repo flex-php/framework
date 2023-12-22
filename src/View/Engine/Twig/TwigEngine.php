@@ -20,8 +20,5 @@ class TwigEngine implements EngineInterface
     public function postProcess(string $content, array $data = [])
     {
         return $content;
-        $template = $this->twig->createTemplate($content);
-
-        return $template->render($data);
     }
 }

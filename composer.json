@@ -29,7 +29,10 @@
         "symfony/console": "^6.3",
         "symfony/profiler-pack": "^1.0",
         "symfony/web-profiler-bundle": "^6.3",
-        "symfony/ux-twig-component": "^2.12"
+        "symfony/ux-twig-component": "^2.12",
+        "twig/markdown-extra": "^3.8",
+        "twig/extra-bundle": "^3.8",
+        "league/commonmark": "^2.4"
     },
     "require-dev": {
         "symfony/test-pack": "^1.1",

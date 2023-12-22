@@ -8,3 +8,4 @@ imports:
   - { resource: 'services/routing.yaml' }
   - { resource: 'services/views.yaml' }
   - { resource: 'services/listeners.yaml' }
+  - { resource: 'services/twig.yaml' }
