@@ -2,8 +2,11 @@
 
 namespace Flex\View;
 
-use Flex\View\Engine\Twig\TwigEngine;
+use Flex\Event\PreRenderEvent;
+use Flex\View\Variables\VariablesBag;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Twig\Environment;
 use Twig\Markup;
@@ -13,33 +16,25 @@ class ViewRenderService
 
     protected array $data = [];
 
-    public function __construct(protected Environment $twig, protected string $projectDir)
+    public function __construct(protected RequestStack $requestStack, protected Environment $twig, protected string $projectDir, protected EventDispatcherInterface $eventDispatcher)
     {
-    }
-
-    public function outlet(): void {
-        if (
-            !isset($this->data['__content']) ||
-            empty($this->data['__content']) ||
-            !is_string($this->data['__content']))
-        {
-            return;
-        }
-
-        echo $this->data['__content'];
     }
 
     protected function renderView(string $path, array $data = []): string
     {
         $fileName = basename($path);
-        [,$extension] = explode('.', $fileName, 2);
+        [, $extension] = explode('.', $fileName, 2);
 
-        if($extension !== "html.twig"){
+        if ($extension !== "html.twig") {
             throw new \Exception("Only twig templates are supported");
         }
 
         $filePath = substr($path, strlen(realpath($this->projectDir)) + 1);
-        return $this->twig->render($filePath, $data);
+
+        $variablesBag = new VariablesBag($data);
+        $this->eventDispatcher->dispatch(new PreRenderEvent($variablesBag, $this->requestStack, $filePath), PreRenderEvent::PRE_RENDER);
+
+        return $this->twig->render($filePath, $variablesBag->all());
     }
 
     public function render(Request $request, array $data = []): Response
@@ -49,13 +44,13 @@ class ViewRenderService
         return new Response($this->renderStack($stack, $data));
     }
 
-    public function renderStack(array $stack, array $data = []) : string
+    public function renderStack(array $stack, array $data = []): string
     {
         $this->data = $data;
         $this->data["outlet"] = new Markup($this->renderView($stack["page"], $this->data), 'UTF-8');
         $layouts = $stack["layouts"];
 
-        while($layout = array_pop($layouts)){
+        while ($layout = array_pop($layouts)) {
             $this->data["outlet"] = new Markup($this->renderView($layout, $this->data), 'UTF-8');
         }
 

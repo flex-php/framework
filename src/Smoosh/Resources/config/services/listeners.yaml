@@ -1,0 +1,7 @@
+services:
+  Flex\Smoosh\Listeners\PreRenderListener:
+    arguments:
+      $manifest: '@Flex\Smoosh\SmooshManifest'
+      $slotRegister: '@Flex\View\Engine\Twig\Extension\Slot\SlotRegister'
+    tags:
+      - { name: kernel.event_listener, event: 'flex.pre-render', method: onPreRender }

@@ -2,9 +2,14 @@ services:
   Flex\View\ViewEngineManager: ~
   Flex\View\ViewRenderService:
     arguments:
+      $requestStack: '@request_stack'
       $twig: '@twig'
       $projectDir: '%kernel.project_dir%'
+      $eventDispatcher: '@event_dispatcher'
 
+  Flex\View\Engine\Twig\Extension\Slot\SlotRegister: ~
   Flex\View\Engine\Twig\Extension\FlexTwigExtension:
     tags:
       - { name: 'twig.extension' }
+    arguments:
+      $slotRegister: '@Flex\View\Engine\Twig\Extension\Slot\SlotRegister'

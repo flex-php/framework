@@ -1,4 +1,0 @@
-twig:
-  paths:
-    '%kernel.project_dir%/': ~
-    '%kernel.project_dir%/components': ~

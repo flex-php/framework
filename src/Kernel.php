@@ -3,6 +3,8 @@
 namespace Flex;
 
 use Flex\DependencyInjection\Compiler\ViewEnginePass;
+use Flex\Smoosh\SmooshBundle;
+use Flex\Smoosh\SmooshExtension;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Bundle\MonologBundle\MonologBundle;
@@ -10,11 +12,8 @@ use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Bundle\WebProfilerBundle\WebProfilerBundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
-use Symfony\UX\TwigComponent\DependencyInjection\TwigComponentExtension;
-use Symfony\UX\TwigComponent\Twig\ComponentExtension;
 use Symfony\UX\TwigComponent\TwigComponentBundle;
 
 class Kernel extends \Symfony\Component\HttpKernel\Kernel
@@ -37,6 +36,7 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
             new MonologBundle(),
             new TwigBundle(),
             new TwigComponentBundle(),
+            new SmooshBundle(),
         ];
 
         if ($this->getEnvironment() !== 'prod') {
@@ -80,6 +80,7 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
         }
 
         $container->addCompilerPass(new ViewEnginePass());
+        // $container->registerExtension(new SmooshExtension());
     }
 
     public function handleAndTerminate(): void
@@ -117,8 +118,6 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
 
         $container->parameters()->set('flex.app_dir', $appDir);
         $container->import(__DIR__ . '/Resources/config/services/*.yaml');
-        $container->import(__DIR__ . '/Resources/config/twig/twig.yaml');
-        $container->import(__DIR__ . '/Resources/config/twig/twig_component.yaml');
 
         $frameworkConfig = [
             "secret" => "S0ME_SECRET",
@@ -168,6 +167,18 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
                     "channels" => ["!event"]
                 ]
             ]
+        ]);
+
+        $twigPaths = [
+            '%kernel.project_dir%/' => null,
+        ];
+        
+        if (is_dir($this->getProjectDir() . "/components")) {
+            $twigPaths["%kernel.project_dir%/components"] = null;
+        }
+
+        $container->extension("twig", [
+            "paths" => $twigPaths,
         ]);
 
         if (isset($this->bundles['WebProfilerBundle'])) {

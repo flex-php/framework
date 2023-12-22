@@ -32,6 +32,18 @@ class FileSystemRouteLoader extends Loader
         $generatedRoutes = $this->routeGeneratorService->generateRoutesFromDirectory($root);
 
         foreach ($generatedRoutes as $details) {
+            $name = $details['name'];
+
+            if(substr($name, 0, 5) == "page:"){
+                $name = substr($name, 5);
+
+                if(empty($name)){
+                    $name = "/";
+                }
+            }
+
+            $details["name"] = $name;
+
             $route = $this->getRoute($details);
             $routes->add($details["name"], $route);
         }
