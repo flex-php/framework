@@ -27,54 +27,53 @@ class PreRenderListener
       return;
     }
 
-    $this->handleScript($dir);
-    $this->handleStyle($dir);
+    $this->handleAssets($dir);
   }
 
   protected function handleDevServer(string $dir): void {
     $viteDevServerScript = '<script type="module" src="http://localhost:3333/@vite/client"></script>';
     if(!$this->slotRegister->exists($viteDevServerScript)){
-      $this->slotRegister->append("foot", $viteDevServerScript);
+      $this->slotRegister->append("foot", $viteDevServerScript, "vite-dev-server");
     }
 
-    if(file_exists($this->projectDir . "/" . $dir . "/script.js")){
-      $this->slotRegister->append("foot", '<script type="module" src="http://localhost:3333/'.$dir.'/script.js"></script>');
-    }
-
-    if(file_exists($this->projectDir . "/" . $dir . "/style.css")){
-      $this->slotRegister->append("head", '<link rel="stylesheet" href="http://localhost:3333/'.$dir.'/style.css">');
-    }
+    $this->handleAsset($dir, 'script.js', 'foot', '<script type="module" src="http://localhost:3333/%s"></script>');
+    $this->handleAsset($dir, 'script.ts', 'foot', '<script type="module" src="http://localhost:3333/%s"></script>');
+    $this->handleAsset($dir, 'style.css', 'head', '<link rel="stylesheet" href="http://localhost:3333/%s">');
+    $this->handleAsset($dir, 'style.scss', 'head', '<link rel="stylesheet" href="http://localhost:3333/%s">');
+    $this->handleAsset($dir, 'style.less', 'head', '<link rel="stylesheet" href="http://localhost:3333/%s">');
   }
 
-  protected function handleScript(string $dir): void
+  protected function handleAssets(string $dir): void
   {
-    $scriptPath = $dir . "/script.js";
-    $asset = $this->getAsset($scriptPath);
+    $this->handleAsset($dir, 'script.js', 'foot', '<script src="/build/%s"></script>');
+    $this->handleAsset($dir, 'script.ts', 'foot', '<script src="/build/%s"></script>');
+    $this->handleAsset($dir, 'style.css', 'head', '<link rel="stylesheet" href="/build/%s">');
+    $this->handleAsset($dir, 'style.scss', 'head', '<link rel="stylesheet" href="/build/%s">');
+    $this->handleAsset($dir, 'style.less', 'head', '<link rel="stylesheet" href="/build/%s">');
+  }
+
+  protected function handleAsset(string $dir, string $file, string $slot, string $tagFormat): void
+  {
+    $filePath = $dir . "/" . $file;
+    $asset = $this->getAsset($filePath);
 
     if ($asset !== null) {
-      $script_tag = "<script src=\"/build/{$asset["file"]}\"></script>";
-      $this->appendTag("foot", $script_tag);
-
+      $tag = sprintf($tagFormat, $asset["file"]);
+      $this->appendTag($slot, $tag, $asset["file"]);
       if (isset($asset["css"]) && is_array($asset["css"])) {
-        foreach ($asset["css"] as $css) {
-          $link_tag = "<link rel=\"stylesheet\" href=\"/build/{$css}\">";
-
-          if (!$this->slotRegister->exists($link_tag)) {
-            $this->slotRegister->append("head", $link_tag);
-          }
-        }
+        $this->addCss($asset["css"], $dir);
       }
     }
   }
 
-  protected function handleStyle(string $dir): void
+  protected function addCss(array $cssFiles, string $dir): void
   {
-    $stylePath = $dir . "/style.css";
-    $asset = $this->getAsset($stylePath);
+    foreach ($cssFiles as $css) {
+      $link_tag = "<link rel=\"stylesheet\" href=\"/build/{$css}\">";
 
-    if ($asset !== null) {
-      $link_tag = "<link rel=\"stylesheet\" href=\"/build/{$asset["file"]}\">";
-      $this->appendTag("head", $link_tag);
+      if (!$this->slotRegister->exists($link_tag)) {
+        $this->slotRegister->append("head", $link_tag, $css);
+      }
     }
   }
 
@@ -87,10 +86,10 @@ class PreRenderListener
     return $this->cachedAssets[$path];
   }
 
-  protected function appendTag(string $slot, string $tag): void
+  protected function appendTag(string $slot, string $tag, string $id): void
   {
     if (!$this->slotRegister->exists($tag)) {
-      $this->slotRegister->append($slot, $tag);
+      $this->slotRegister->append($slot, $tag, $id);
     }
   }
 }
