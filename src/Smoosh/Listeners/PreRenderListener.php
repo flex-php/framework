@@ -58,7 +58,7 @@ class PreRenderListener
 
     if ($isDev) {
       if (file_exists($this->projectDir . "/" . $filePath)) {
-        $tag = sprintf($tagFormat, $file);
+        $tag = sprintf($tagFormat, $filePath);
         $this->appendTag($slot, $tag, $file);
       }
     } else {
