@@ -55,8 +55,9 @@ class PreRenderListener
   protected function handleAsset(string $dir, string $file, string $slot, string $tagFormat, bool $isDev = false): void
   {
     $filePath = $dir . "/" . $file;
+
     if ($isDev) {
-      if (file_exists($this->projectDir . $filePath)) {
+      if (file_exists($this->projectDir . "/" . $filePath)) {
         $tag = sprintf($tagFormat, $file);
         $this->appendTag($slot, $tag, $file);
       }
