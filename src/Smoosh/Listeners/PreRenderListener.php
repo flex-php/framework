@@ -12,6 +12,7 @@ class PreRenderListener
 
   public function __construct(
     protected string $env,
+    protected string $projectDir,
     protected SmooshManifest $manifest,
     protected SlotRegister $slotRegister
   ) {
@@ -19,23 +20,30 @@ class PreRenderListener
 
   public function onPreRender(PreRenderEvent $event)
   {
+    $dir = dirname($event->path);
+
     if($this->env === "dev"){
-      $this->handleDevServer();
+      $this->handleDevServer($dir);
       return;
     }
 
-    $dir = dirname($event->path);
     $this->handleScript($dir);
     $this->handleStyle($dir);
   }
 
-  protected function handleDevServer(): void {
-    $this->slotRegister->append("foot", <<<HTML
-    <script type="module">
-      window.\$RefreshReg$ = () => {}
-      window.\$RefreshSig$ = () => (type) => type
-    </script>
-    HTML);
+  protected function handleDevServer(string $dir): void {
+    $viteDevServerScript = '<script type="module" src="http://localhost:3333/@vite/client"></script>';
+    if(!$this->slotRegister->exists($viteDevServerScript)){
+      $this->slotRegister->append("foot", $viteDevServerScript);
+    }
+
+    if(file_exists($this->projectDir . "/" . $dir . "/script.js")){
+      $this->slotRegister->append("foot", '<script type="module" src="http://localhost:3333/'.$dir.'/script.js"></script>');
+    }
+
+    if(file_exists($this->projectDir . "/" . $dir . "/style.css")){
+      $this->slotRegister->append("head", '<link rel="stylesheet" href="http://localhost:3333/'.$dir.'/style.css">');
+    }
   }
 
   protected function handleScript(string $dir): void

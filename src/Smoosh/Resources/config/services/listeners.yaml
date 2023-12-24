@@ -2,6 +2,7 @@ services:
   Flex\Smoosh\Listeners\PreRenderListener:
     arguments:
       $env: '%kernel.environment%'
+      $projectDir: '%kernel.project_dir%'
       $manifest: '@Flex\Smoosh\SmooshManifest'
       $slotRegister: '@Flex\View\Engine\Twig\Extension\Slot\SlotRegister'
     tags:
