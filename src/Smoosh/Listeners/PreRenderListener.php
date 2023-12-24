@@ -32,11 +32,8 @@ class PreRenderListener
   protected function handleDevServer(): void {
     $this->slotRegister->append("foot", <<<HTML
     <script type="module">
-      import RefreshRuntime from "http://localhost:3333/@react-refresh"
-      RefreshRuntime.injectIntoGlobalHook(window)
       window.\$RefreshReg$ = () => {}
       window.\$RefreshSig$ = () => (type) => type
-      window.__vite_plugin_react_preamble_installed__ = true
     </script>
     HTML);
   }
