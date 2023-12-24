@@ -10,15 +10,35 @@ class PreRenderListener
 {
   protected array $cachedAssets = [];
 
-  public function __construct(protected SmooshManifest $manifest, protected SlotRegister $slotRegister)
-  {
+  public function __construct(
+    protected string $env,
+    protected SmooshManifest $manifest,
+    protected SlotRegister $slotRegister
+  ) {
   }
 
   public function onPreRender(PreRenderEvent $event)
   {
+    if($this->env === "dev"){
+      $this->handleDevServer();
+      return;
+    }
+
     $dir = dirname($event->path);
     $this->handleScript($dir);
     $this->handleStyle($dir);
+  }
+
+  protected function handleDevServer(): void {
+    $this->slotRegister->append("foot", <<<HTML
+    <script type="module">
+      import RefreshRuntime from "http://localhost:3333/@react-refresh"
+      RefreshRuntime.injectIntoGlobalHook(window)
+      window.\$RefreshReg$ = () => {}
+      window.\$RefreshSig$ = () => (type) => type
+      window.__vite_plugin_react_preamble_installed__ = true
+    </script>
+    HTML);
   }
 
   protected function handleScript(string $dir): void
