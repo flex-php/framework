@@ -36,11 +36,11 @@ class PreRenderListener
       $this->slotRegister->append("foot", $viteDevServerScript, "vite-dev-server");
     }
 
-    $this->handleAsset($dir, 'script.js', 'foot', '<script type="module" src="http://localhost:3333/%s"></script>');
-    $this->handleAsset($dir, 'script.ts', 'foot', '<script type="module" src="http://localhost:3333/%s"></script>');
-    $this->handleAsset($dir, 'style.css', 'head', '<link rel="stylesheet" href="http://localhost:3333/%s">');
-    $this->handleAsset($dir, 'style.scss', 'head', '<link rel="stylesheet" href="http://localhost:3333/%s">');
-    $this->handleAsset($dir, 'style.less', 'head', '<link rel="stylesheet" href="http://localhost:3333/%s">');
+    $this->handleAsset($dir, 'script.js', 'foot', '<script type="module" src="http://localhost:3333/%s"></script>', true);
+    $this->handleAsset($dir, 'script.ts', 'foot', '<script type="module" src="http://localhost:3333/%s"></script>', true);
+    $this->handleAsset($dir, 'style.css', 'head', '<link rel="stylesheet" href="http://localhost:3333/%s">', true);
+    $this->handleAsset($dir, 'style.scss', 'head', '<link rel="stylesheet" href="http://localhost:3333/%s">', true);
+    $this->handleAsset($dir, 'style.less', 'head', '<link rel="stylesheet" href="http://localhost:3333/%s">', true);
   }
 
   protected function handleAssets(string $dir): void
@@ -52,16 +52,20 @@ class PreRenderListener
     $this->handleAsset($dir, 'style.less', 'head', '<link rel="stylesheet" href="/build/%s">');
   }
 
-  protected function handleAsset(string $dir, string $file, string $slot, string $tagFormat): void
+  protected function handleAsset(string $dir, string $file, string $slot, string $tagFormat, bool $isDev = false): void
   {
     $filePath = $dir . "/" . $file;
-    $asset = $this->getAsset($filePath);
-
-    if ($asset !== null) {
-      $tag = sprintf($tagFormat, $asset["file"]);
-      $this->appendTag($slot, $tag, $asset["file"]);
-      if (isset($asset["css"]) && is_array($asset["css"])) {
-        $this->addCss($asset["css"], $dir);
+    if ($isDev) {
+      $tag = sprintf($tagFormat, $file);
+      $this->appendTag($slot, $tag, $file);
+    } else {
+      $asset = $this->getAsset($filePath);
+      if ($asset !== null) {
+        $tag = sprintf($tagFormat, $asset["file"]);
+        $this->appendTag($slot, $tag, $asset["file"]);
+        if (isset($asset["css"]) && is_array($asset["css"])) {
+          $this->addCss($asset["css"], $dir);
+        }
       }
     }
   }
