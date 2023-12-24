@@ -56,8 +56,10 @@ class PreRenderListener
   {
     $filePath = $dir . "/" . $file;
     if ($isDev) {
-      $tag = sprintf($tagFormat, $file);
-      $this->appendTag($slot, $tag, $file);
+      if (file_exists($this->projectDir . $filePath)) {
+        $tag = sprintf($tagFormat, $file);
+        $this->appendTag($slot, $tag, $file);
+      }
     } else {
       $asset = $this->getAsset($filePath);
       if ($asset !== null) {
