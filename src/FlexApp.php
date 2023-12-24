@@ -19,7 +19,7 @@ class FlexApp
     $dotenv->load();
 
     $this->environment = $_ENV["APP_ENV"] ?? "dev";
-    if($config["environment"] !== null){
+    if (!empty($config["environment"])) {
       $this->environment = $config["environment"];
     }
   }
