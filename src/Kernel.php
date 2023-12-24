@@ -3,7 +3,6 @@
 namespace Flex;
 
 use Flex\DependencyInjection\Compiler\ViewEnginePass;
-use Flex\Event\BootstrapEvent;
 use Flex\Smoosh\SmooshBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
@@ -20,12 +19,10 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
 {
     use MicroKernelTrait;
 
-    protected array $flexConfig = [];
     protected array $extensionConfigs = [];
 
-    public function __construct(string $environment)
+    public function __construct(protected string $projectRoot, protected array $flexConfig, string $environment)
     {
-        $this->flexConfig = $this->getFlexConfig();
         parent::__construct($environment, $environment == "dev");
     }
 
@@ -58,7 +55,7 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
 
     public function getProjectDir(): string
     {
-        return realpath(FLEX_ROOT);
+        return $this->projectRoot;
     }
 
     protected function build(ContainerBuilder $container): void
@@ -186,15 +183,5 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
                 'intercept_redirects' => false,
             ]);
         }
-    }
-
-    protected function getFlexConfig()
-    {
-        $filePath = $this->getProjectDir() . "/flex.config.php";
-        if(!file_exists($filePath)){
-            return [];
-        }
-
-        return require $filePath;
     }
 }
