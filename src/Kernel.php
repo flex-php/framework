@@ -79,9 +79,8 @@ class Kernel extends \Symfony\Component\HttpKernel\Kernel
         $container->addCompilerPass(new ViewEnginePass());
     }
 
-    public function handleAndTerminate(): void
+    public function handleAndTerminate(Request $request): void
     {
-        $request = Request::createFromGlobals();
         $response = $this->handle($request);
         $response->send();
 

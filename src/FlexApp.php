@@ -38,5 +38,7 @@ class FlexApp
     if ($request === null) {
       $request = Request::createFromGlobals();
     }
+
+    $this->kernel->handleAndTerminate($request);
   }
 }
