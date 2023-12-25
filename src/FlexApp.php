@@ -16,7 +16,7 @@ class FlexApp
   public function __construct(protected $projectRoot, protected array $config = [])
   {
     $dotenv = Dotenv::createImmutable($projectRoot);
-    $dotenv->load();
+    $dotenv->safeLoad();
 
     $this->environment = $_ENV["APP_ENV"] ?? "dev";
     if (!empty($config["environment"])) {
