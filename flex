@@ -5,7 +5,5 @@ use Flex\Console\Application;
 
 require __DIR__ . '/vendor/autoload.php';
 
-const FLEX_CLI_ROOT = __DIR__;
-
-$application = new Application();
+$application = new Application(__DIR__);
 $application->run();

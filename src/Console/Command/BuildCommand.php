@@ -4,7 +4,6 @@ namespace Flex\Console\Command;
 
 use Flex\Console\Application;
 use Flex\Event\BuildEvent;
-use Flex\Service\RouteGeneratorService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

@@ -12,7 +12,7 @@ class Application extends \Symfony\Component\Console\Application
 {
     protected ?Kernel $kernel = null;
 
-    public function __construct()
+    public function __construct(protected string $projectRoot)
     {
         parent::__construct('Flex', '0.1.0');
     }
@@ -36,8 +36,8 @@ class Application extends \Symfony\Component\Console\Application
         $logo = <<<EOT
     ________    _______  __
    / ____/ /   / ____/ |/ /
-  / /_  / /   / __/  |   / 
- / __/ / /___/ /___ /   |  
+  / /_  / /   / __/  |   /
+ / __/ / /___/ /___ /   |
 /_/   /_____/_____//_/|_|
 
 
@@ -49,7 +49,7 @@ EOT;
     public function getKernel(): Kernel
     {
         if(!$this->kernel){
-            $this->kernel = new Kernel(FLEX_CLI_ROOT, "console");
+            $this->kernel = new Kernel($this->projectRoot, [], "prod");
             $this->kernel->boot();
         }
 

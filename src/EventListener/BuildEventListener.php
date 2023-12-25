@@ -88,7 +88,7 @@ class BuildEventListener
 
     protected function replaceParams(string $pattern, array $params): string
     {
-        $routeName = "page:" . $pattern;
+        $routeName = $pattern;
 
         return $this->router->generate($routeName, $params);
     }
